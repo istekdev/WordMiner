@@ -33,16 +33,16 @@ def mine():
   print(colored(f"Created: {date}", "white", attrs=["bold"]))
   print("")
   print(colored("Mining Has Begun...", "yellow", attrs=["bold"]))
-  version = 1
+  version = read["version"]
   max = (2**32) - 1
   start = round(time.time())
   currentword = connect[0]
   timestamp = round(time.time())
   end = 0
   nonce = 0
-  while nonce > max:
+  while nonce <= max:
     wordhash = keccak(keccak(currentword.encode("utf-8") + target.to_bytes(32, "big") + str(timestamp).encode("utf-8") + nonce.to_bytes(32, "big") + str(end).encode("utf-8") + version.to_bytes(4, "big"))).hex()
-    if int(wordhash, 16) => target:
+    if int(wordhash, 16) <= target:
       print(colored("Word Has Been Mined, Adding To The Blockchain...", "green", attrs=["bold"]))
       end = round(time.time())
       with open("chain.json", "r") as verify:
@@ -51,6 +51,7 @@ def mine():
         block = {
           "version": version,
           "timestamp": timestamp,
+          "height": 1,
           "mined": end,
           "word": currentword,
           "nonce": nonce,
@@ -58,16 +59,20 @@ def mine():
           "wordHash": wordhash,
           "prevHash": "0"*64
         }
+        read["1"] = block
         with open("chain.json", "w") as add:
-          json.dump(ver, add, indent=4)
+          json.dump(read, add, indent=4)
       else:
         with open("chain.json", "r") as r:
-          read = json.read(r)
-        prev = list(read.keys())[0]
-        prevHash = read[newest]["wordHash"]
+          read = json.load(r)
+        prev = list(read.keys())[-2]
+        prevHash = read[prev]["wordHash"]
+        prevHeight = read[prev]["height"]
+        yourHeight = prevHeight + 1
         block = {
           "version": version,
           "timestamp": timestamp,
+          "height": yourHeight,
           "mined": end,
           "word": currentword,
           "nonce": nonce,
@@ -75,20 +80,20 @@ def mine():
           "wordHash": wordhash,
           "prevHash": prevHash
         }
-        with open("chain.json", "a") as add:
+        read[str(yourHeight)] = block
+        with open("chain.json", "w") as add:
           json.dump(read, add, indent=4)
+    nonce += 1
   if nonce < max:
     print(colored("Nonces Have Been Exhausted - Renewing...", "yellow", attrs=["bold"]))
     mine()
-  else:
-    nonce +=1
   with open("chain.json", "r") as r:
     read = json.load(r)
   latest = list(read.keys())[-1]
-  start = read[newest]["timestamp"]
-  end = read[newest]["end"]
+  start = read[latest]["timestamp"]
+  end = read[latest]["mined"]
   actual = end - start
-  difficulty = difficulty * (180 * actual)
+  difficulty = difficulty * (180 / actual)
   target = (2**224) * ((2**32) - 1) // difficulty
   clear()
   mine()
