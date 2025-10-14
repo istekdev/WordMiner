@@ -11,9 +11,12 @@ target = 0
 if os.path.exists("chain.json"):
   with open("chain.json", "r") as r:
     read = json.load(r)
-  newest = list(read.keys())[-1]
-  target = read[newest]["target"]
-  difficulty = (2**244 * (2**32 - 1)) // target
+  if read == {}:
+    pass
+  else:
+    newest = list(read.keys())[-1]
+    target = read[newest]["target"]
+    difficulty = (2**244 * (2**32 - 1)) // target
 else:
   difficulty = 1000000 * 180
   target = (2**224) * ((2**32) - 1) // difficulty
@@ -22,12 +25,14 @@ def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def mine():
+  global target, difficulty
   with open("config.json", "r") as r:
     read = json.load(r)
-  connect = requests.get(read["endpoint"])
-  print(colored(f"Developer: {read["developer"]}", "white", attrs=["bold"]))
-  print(colored(f"Github: {read["github"]}", "white", attrs=["bold"]))
-  created = read["date_of_creation"]
+  c = requests.get(read["endpoint"])
+  connect = c.json()
+  print(colored(f"Developer: {read["socials"]["developer"]}", "white", attrs=["bold"]))
+  print(colored(f"Github: {read["socials"]["github"]}", "white", attrs=["bold"]))
+  created = read["socials"]["date_of_creation"]
   local = time.localtime(created)
   date = time.strftime("%Y-%m-%d %H:%M:%S", local)
   print(colored(f"Created: {date}", "white", attrs=["bold"]))
