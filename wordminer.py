@@ -47,6 +47,7 @@ def mine():
   nonce = 0
   while nonce <= max:
     wordhash = keccak(keccak(currentword.encode("utf-8") + target.to_bytes(32, "big") + str(timestamp).encode("utf-8") + nonce.to_bytes(32, "big") + str(end).encode("utf-8") + version.to_bytes(4, "big"))).hex()
+    #print(colored(f"Current Hash - {wordhash}", "yellow", attrs=["bold"]))
     if int(wordhash, 16) <= target:
       print(colored("Word Has Been Mined, Adding To The Blockchain...", "green", attrs=["bold"]))
       end = round(time.time())
