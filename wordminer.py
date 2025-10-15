@@ -68,7 +68,8 @@ def mine():
         read["1"] = block
         with open("chain.json", "w") as add:
           json.dump(read, add, indent=4)
-        break
+        time.sleep(1)
+        mine()
       else:
         with open("chain.json", "r") as r:
           read = json.load(r)
@@ -90,7 +91,8 @@ def mine():
         read[str(yourHeight)] = block
         with open("chain.json", "w") as add:
           json.dump(read, add, indent=4)
-        break
+        time.sleep(1)
+        mine()
     nonce += 1
   if nonce < max:
     print(colored("Nonces Have Been Exhausted - Renewing...", "yellow", attrs=["bold"]))
