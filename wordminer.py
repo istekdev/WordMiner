@@ -27,18 +27,18 @@ def clear():
 def mine():
   global target, difficulty
   with open("config.json", "r") as r:
-    read = json.load(r)
+    config = json.load(r)
   c = requests.get(read["endpoint"])
   connect = c.json()
-  print(colored(f"Developer: {read["socials"]["developer"]}", "white", attrs=["bold"]))
-  print(colored(f"Github: {read["socials"]["github"]}", "white", attrs=["bold"]))
-  created = read["socials"]["date_of_creation"]
+  print(colored(f"Developer: {config["socials"]["developer"]}", "white", attrs=["bold"]))
+  print(colored(f"Github: {config["socials"]["github"]}", "white", attrs=["bold"]))
+  created = config["socials"]["date_of_creation"]
   local = time.localtime(created)
   date = time.strftime("%Y-%m-%d %H:%M:%S", local)
   print(colored(f"Created: {date}", "white", attrs=["bold"]))
   print("")
   print(colored("Mining Has Begun...", "yellow", attrs=["bold"]))
-  version = read["version"]
+  version = config["version"]
   max = (2**32) - 1
   start = round(time.time())
   currentword = connect[0]
@@ -65,7 +65,7 @@ def mine():
           "wordHash": wordhash,
           "prevHash": "0"*64
         }
-        read["1"] = block
+        ver["1"] = block
         with open("chain.json", "w") as add:
           json.dump(read, add, indent=4)
         time.sleep(1)
@@ -111,14 +111,14 @@ def mine():
 def connect():
   print(colored("Establishing A Connection To The API Endpoint...", "yellow", attrs=["bold"]))
   with open("config.json", "r") as r:
-    read = json.load(r)
-  connect = requests.get(read["endpoint"])
+    config = json.load(r)
+  connect = requests.get(config["endpoint"])
   try:
       word = connect.json()
   except ValueError:
       print(colored("Error - Failed To Connect.", "red", attrs=["bold"]))
       word = None
-  print(colored(f"Successfully Connected - Endpoint: {read['endpoint']}", "green", attrs=["bold"]))
+  print(colored(f"Successfully Connected - Endpoint: {config['endpoint']}", "green", attrs=["bold"]))
   if os.path.exists("chain.json"):
     print(colored("Welcome Back", "green", attrs=["bold"]))
   else:
