@@ -28,7 +28,7 @@ def mine():
   global target, difficulty
   with open("config.json", "r") as r:
     config = json.load(r)
-  c = requests.get(read["endpoint"])
+  c = requests.get(config["endpoint"])
   connect = c.json()
   print(colored(f"Developer: {config["socials"]["developer"]}", "white", attrs=["bold"]))
   print(colored(f"Github: {config["socials"]["github"]}", "white", attrs=["bold"]))
